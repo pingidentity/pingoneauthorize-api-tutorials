@@ -1,0 +1,20 @@
+# The Kong runtime HTTPS port
+#
+# KONG_ENGINE_HTTPS_PORT=8443
+
+# By default the Kong GUI runs on HTTP port 8002
+# and uses the API on HTTP port 8001.
+# 
+# Change the following variables if you need to use
+# different ports or if you are running
+# on a docker-machine (not localhost.)
+#
+# KONG_ADMIN_GUI_URL=http://localhost:8002
+# KONG_ADMIN_GUI_PORT=8002
+# KONG_ADMIN_API_PORT=8001
+
+# By default Kong logs at INFO level.
+# Uncomment this to increase logging to DEBUG.
+#
+# KONG_LOG_LEVEL=debug
+

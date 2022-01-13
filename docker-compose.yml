@@ -1,0 +1,61 @@
+version: '3.9'
+services:
+  kong:
+    container_name: p1az-kong
+    build:
+      context: .
+      dockerfile: Dockerfile-kong
+    depends_on:
+      - database
+    networks:
+      - p1az-kong-net
+    env_file:
+      - .env
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: database
+      KONG_PG_PASSWORD: kong
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_ADMIN_GUI_URL: ${KONG_ADMIN_GUI_URL:-http://localhost:8002}
+    ports:
+      - ${KONG_ADMIN_API_PORT:-8001}:8001
+      - ${KONG_ADMIN_GUI_PORT:-8002}:8002
+      - ${KONG_ENGINE_HTTPS_PORT:-8443}:8443
+    command: wait-for -t 60 database:5432 -- sh -c "kong migrations bootstrap && kong start --run-migrations"
+  kong-config:
+    container_name: p1az-kong-config
+    image: curlimages/curl
+    depends_on:
+      - kong
+    networks:
+      - p1az-kong-net
+    command: sh -c "
+        curl -f -i --retry 99 --retry-connrefused --retry-delay 3 --retry-max-time 60 http://kong:8001 &&
+        (curl -f -i http://kong:8001/services/meme-game
+        || curl -f -i -X POST http://kong:8001/services -d name=meme-game -d url='https://meme-game.com') &&
+        (curl -f -i http://kong:8001/services/meme-game/routes/default
+        || curl -f -i -X POST http://kong:8001/services/meme-game/routes -d name=default -d 'protocols[]=https' -d 'paths[]=/meme-game') &&
+        (test `curl -f -s -o /dev/null http://kong:8001/plugins -w '%{size_download}'` -gt 100
+        || curl -f -i -X POST http://kong:8001/plugins -d name=ping-auth -d enabled=false -d 'config.shared_secret=XXXX' -d 'config.secret_header_name=CLIENT-TOKEN' -d 'config.service_url=https://example.com' -d 'protocols[]=http' -d 'protocols[]=https')
+      "
+  database:
+    image: postgres:9.6
+    container_name: p1az-kong-database
+    volumes:
+      - type: volume
+        source: pgdata
+        target: /var/lib/postgresql/data
+    networks:
+      - p1az-kong-net
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_DB: kong
+      POSTGRES_PASSWORD: kong
+networks:
+  p1az-kong-net:
+volumes:
+  pgdata:
