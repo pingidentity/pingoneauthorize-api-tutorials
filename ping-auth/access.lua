@@ -50,7 +50,7 @@ function _M.compose_payload(config, parsed_url)
     payload_body.source_ip = ngx_var.remote_addr
     payload_body.source_port = ngx_var.remote_port
     payload_body.method = ngx_req.get_method()
-    payload_body.http_version = tostring(ngx_req.http_version())
+    payload_body.http_version = string.format("%0.1f", ngx_req.http_version() or 1.0)
     payload_body.url = kong_request.get_scheme() .. "://" .. kong_request.get_forwarded_host() .. ":" ..
             kong_request.get_port() .. kong_request.get_path_with_query()
     payload_body.body = kong_request.get_raw_body()
