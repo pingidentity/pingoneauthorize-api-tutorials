@@ -45,7 +45,7 @@ this project on a docker machine exposed to the internet.
 1. Bring everything up
 
 ```
-docker-compose up -d 
+docker-compose up -d --build
 ```
 
 2. Access the admin GUI
@@ -59,7 +59,7 @@ open http://localhost:8002
 3. Test that it can connect to the Meme Game API
 
 ```
-curl -i --insecure -X GET https://localhost:8443/meme-game/api/v1/users/user.0/answers
+curl -i --insecure --oauth2-bearer '{"sub":"user.0"}' https://localhost:8443/meme-game/api/v1/users/user.0/answers
 ```
 
 > You should get a HTTP 200 status and a JSON response. If not, something went wrong.
