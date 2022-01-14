@@ -11,6 +11,7 @@ RUN chmod 755 /usr/local/bin/wait-for
 COPY ping-auth /usr/local/share/lua/5.1/kong/plugins/ping-auth/
 ENV KONG_PLUGINS=bundled,ping-auth
 
+ENV KONG_PROXY_LISTEN="0.0.0.0:8443 ssl reuseport backlog=16384"
 ENV KONG_LUA_SSL_TRUSTED_CERTIFICATE=system
 ENV KONG_LUA_SSL_VERIFY_DEPTH=3
 
