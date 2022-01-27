@@ -9,8 +9,6 @@ services:
       - database
     networks:
       - p1az-kong-net
-    env_file:
-      - .env
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: database
