@@ -31,9 +31,6 @@ This project requires 3 ports:
 * `KONG_ADMIN_GUI_PORT` - The port for the Kong Manager UI, by default 8002
 * `KONG_ADMIN_API_PORT` - The port for the Kong Admin API, by default 8001
 
-> _NOTE:_ This project supports `docker-machine`, if you are inclined.
-See `env-template.txt` for more information.
-
 # Running
 
 ## Starting

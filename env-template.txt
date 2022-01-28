@@ -5,11 +5,8 @@
 # By default the Kong GUI runs on HTTP port 8002
 # and uses the API on HTTP port 8001.
 # 
-# Change the following variables if you need to use
-# different ports or if you are running
-# on a docker-machine (not localhost.)
+# Change the following variables if you need to use different ports.
 #
-# KONG_ADMIN_GUI_URL=http://localhost:8002
 # KONG_ADMIN_GUI_PORT=8002
 # KONG_ADMIN_API_PORT=8001
 
