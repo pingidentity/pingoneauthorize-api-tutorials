@@ -17,10 +17,10 @@ services:
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_ADMIN_ERROR_LOG: /dev/stderr
-      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_ADMIN_LISTEN: 0.0.0.0:${KONG_ADMIN_API_PORT:-8001}
       KONG_GUI_LISTEN: 0.0.0.0:8002
     ports:
-      - ${KONG_ADMIN_API_PORT:-8001}:8001
+      - ${KONG_ADMIN_API_PORT:-8001}:${KONG_ADMIN_API_PORT:-8001}
       - ${KONG_ADMIN_GUI_PORT:-8002}:8002
       - ${KONG_ENGINE_HTTPS_PORT:-8443}:8443
     command: wait-for -t 60 database:5432 -- sh -c "kong migrations bootstrap && kong start --run-migrations"
@@ -32,19 +32,19 @@ services:
     networks:
       - p1az-kong-net
     command: sh -c "
-        curl -f -i --retry 99 --retry-connrefused --retry-delay 3 --retry-max-time 60 http://kong:8001 &&
-        (curl -f -i http://kong:8001/services/meme-game
-        || curl -f -i -X POST http://kong:8001/services -d name=meme-game -d url='https://meme-game.com') &&
-        (curl -f -i http://kong:8001/services/meme-game/routes/meme-game
-        || curl -f -i -X POST http://kong:8001/services/meme-game/routes -d name=meme-game -d 'protocols[]=https' -d 'paths[]=/meme-game') &&
-        (curl -f -i http://kong:8001/services/bank-api
-        || curl -f -i -X POST http://kong:8001/services -d name=bank-api -d url='https://bank-api.dev') &&
-        (curl -f -i http://kong:8001/services/bank-api/routes/OpenBanking
-        || curl -f -i -X POST http://kong:8001/services/bank-api/routes -d name=OpenBanking -d 'protocols[]=https' -d 'paths[]=/OpenBanking' -d strip_path=false) &&
-        (curl -f -i http://kong:8001/services/bank-api/routes/bank-api
-        || curl -f -i -X POST http://kong:8001/services/bank-api/routes -d name=bank-api -d 'protocols[]=https' -d 'paths[]=/bank-api') &&
-        (test `curl -f -s -o /dev/null http://kong:8001/plugins -w '%{size_download}'` -gt 100
-        || curl -f -i -X POST http://kong:8001/plugins -d name=ping-auth -d enabled=false -d 'config.shared_secret=XXXX' -d 'config.secret_header_name=CLIENT-TOKEN' -d 'config.service_url=https://example.com' -d 'protocols[]=http' -d 'protocols[]=https')
+      curl -f -i --retry 99 --retry-connrefused --retry-delay 3 --retry-max-time 60 http://kong:${KONG_ADMIN_API_PORT:-8001} &&
+      (curl -f -i http://kong:${KONG_ADMIN_API_PORT:-8001}/services/meme-game
+      || curl -f -i -X POST http://kong:${KONG_ADMIN_API_PORT:-8001}/services -d name=meme-game -d url='https://meme-game.com') &&
+      (curl -f -i http://kong:${KONG_ADMIN_API_PORT:-8001}/services/meme-game/routes/meme-game
+      || curl -f -i -X POST http://kong:${KONG_ADMIN_API_PORT:-8001}/services/meme-game/routes -d name=meme-game -d 'protocols[]=https' -d 'paths[]=/meme-game') &&
+      (curl -f -i http://kong:${KONG_ADMIN_API_PORT:-8001}/services/bank-api
+      || curl -f -i -X POST http://kong:${KONG_ADMIN_API_PORT:-8001}/services -d name=bank-api -d url='https://bank-api.dev') &&
+      (curl -f -i http://kong:${KONG_ADMIN_API_PORT:-8001}/services/bank-api/routes/OpenBanking
+      || curl -f -i -X POST http://kong:${KONG_ADMIN_API_PORT:-8001}/services/bank-api/routes -d name=OpenBanking -d 'protocols[]=https' -d 'paths[]=/OpenBanking' -d strip_path=false) &&
+      (curl -f -i http://kong:${KONG_ADMIN_API_PORT:-8001}/services/bank-api/routes/bank-api
+      || curl -f -i -X POST http://kong:${KONG_ADMIN_API_PORT:-8001}/services/bank-api/routes -d name=bank-api -d 'protocols[]=https' -d 'paths[]=/bank-api') &&
+      (test `curl -f -s -o /dev/null http://kong:${KONG_ADMIN_API_PORT:-8001}/plugins -w '%{size_download}'` -gt 100
+      || curl -f -i -X POST http://kong:${KONG_ADMIN_API_PORT:-8001}/plugins -d name=ping-auth -d enabled=false -d 'config.shared_secret=XXXX' -d 'config.secret_header_name=CLIENT-TOKEN' -d 'config.service_url=https://example.com' -d 'protocols[]=http' -d 'protocols[]=https')
       "
   database:
     image: postgres:9.6
