@@ -52,8 +52,9 @@ function _M.compose_payload(config, original_request, state, parsed_url)
     local payload_body = {}
     payload_body.method = ngx_req.get_method()
     payload_body.http_version = tostring(ngx_req.http_version())
-    payload_body.url = kong_request.get_scheme() .. "://" .. kong_request.get_forwarded_host() .. ":" ..
-            kong_request.get_port() .. kong_request.get_path_with_query()
+    payload_body.url = kong_request.get_forwarded_scheme() .. "://" .. kong_request.get_forwarded_host() .. ":" ..
+            kong_request.get_forwarded_port() .. kong_request.get_forwarded_path() ..
+            "?" .. kong_request.get_raw_query()
     payload_body.body = kong_service_response.get_raw_body()
 
     local response_code = kong_response.get_status()
