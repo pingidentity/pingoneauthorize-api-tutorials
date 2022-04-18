@@ -8,7 +8,7 @@ USER root
 ADD https://raw.githubusercontent.com/eficode/wait-for/v2.2.1/wait-for /usr/local/bin/wait-for
 RUN chmod 755 /usr/local/bin/wait-for
 
-COPY ping-auth /usr/local/share/lua/5.1/kong/plugins/ping-auth/
+RUN luarocks install kong-plugin-ping-auth
 ENV KONG_PLUGINS=bundled,ping-auth
 
 ENV KONG_PROXY_LISTEN="0.0.0.0:8443 ssl reuseport backlog=16384"
