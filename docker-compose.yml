@@ -24,7 +24,7 @@ services:
       - ${KONG_ADMIN_API_PORT:-8001}:${KONG_ADMIN_API_PORT:-8001}
       - ${KONG_ADMIN_GUI_PORT:-8002}:8002
       - ${KONG_ENGINE_HTTPS_PORT:-8443}:8443
-    command: wait-for -t 60 database:5432 -- sh -c "luarocks install kong-plugin-ping-auth && kong migrations bootstrap && kong start --run-migrations"
+    command: wait-for -t 60 database:5432 -- sh -c "luarocks install kong-plugin-ping-auth 1.1.0-1 && kong migrations bootstrap && kong start --run-migrations"
   kong-config:
     container_name: p1az-kong-config
     image: curlimages/curl
